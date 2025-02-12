@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionnaire à 3 codes</title>
+    <style>
+        body {
+            background-image: url("fond.svg");
+            background-repeat: no-repeat;
+            background-size: cover;
+            color: #90A955;
+            text-align: center;
+        }
+        h1 {
+            color: #ECF39E;
+            font-size: 100px;
+            margin-bottom: 10px;
+        }
+        .timer {
+            font-size: 50px;
+            margin-top: 0;
+            color: #487642;
+        }
+        input {
+            background-color: #4f772d;
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 10%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Questionnaire</h1>
+    <h2>Entrez les codes secrets :</h2>
+
+    <div class="timer" id="timer">50:00</div>
+
+    <!-- Trois champs de saisie pour les codes -->
+    <div id="codes">
+        <p>alimentation</p>
+        <input type="text" id="input1" placeholder="Code 1">
+        <p>énergie</p>
+        <input type="text" id="input2" placeholder="Code 2">
+        <p>biodiversité</p>
+        <input type="text" id="input3" placeholder="Code 3">
+    </div>
+    
+    <button id="validateButton">Valider</button>
+
+    <div id="result"></div>
+
+    <script>
+        function startTimer(duration, display) {
+            let timer = duration, minutes, seconds;
+            setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    timer = 0;
+                }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            var sixtyMinutes = 50 * 60,
+                display = document.querySelector('#timer');
+            startTimer(sixtyMinutes, display);
+
+            // Codes corrects
+            let code1 = "1234";
+            let code2 = "5678";
+            let code3 = "abcd";
+
+            document.getElementById('validateButton').addEventListener('click', function() {
+                let input1 = document.getElementById('input1').value;
+                let input2 = document.getElementById('input2').value;
+                let input3 = document.getElementById('input3').value;
+                let result = document.getElementById('result');
+
+                if (input1 === code1 && input2 === code2 && input3 === code3) {
+                    result.textContent = "Tous les codes sont corrects, vous avez sauvé le monde !";
+                    result.style.color = "green";
+                } else {
+                    result.textContent = "Mauvais codes, essayez encore.";
+                    result.style.color = "red";
+                }
+            });
+        };
+    </script>
+</body>
+</html>
+
+<!--
+palette de couleur
+ECF39E => titres
+4f772d => codes
+132A13 => fond
+487642 => timer
+90A955 => textes
+-->
