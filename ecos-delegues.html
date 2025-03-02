@@ -3,37 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Questionnaire à 3 codes</title>
+    <title>Escape game</title>
     <style>
         body {
-            background-image: url("fond.svg");
+            background-image: url("fondv2.svg");
             background-repeat: no-repeat;
             background-size: cover;
-            color: #90A955;
+            color: #D8F3DC;
             text-align: center;
         }
         h1 {
-            color: #ECF39E;
+            color: #95D5B2;
             font-size: 100px;
             margin-bottom: 10px;
         }
         .timer {
             font-size: 50px;
             margin-top: 0;
-            color: #487642;
+            color: #B7E4C7;
         }
         input {
-            background-color: #4f772d;
+            background-color: #40916C;
             color: #ffffff;
             border: none;
             padding: 10px;
             margin: 10px;
             border-radius: 10%;
         }
+        h3{
+            color: #95D5B2;
+            font-size: 70px;
+        }
+
     </style>
 </head>
 <body>
-    <h1>Questionnaire</h1>
+    <h1>escape game</h1>
     <h2>Entrez les codes secrets :</h2>
 
     <div class="timer" id="timer">50:00</div>
@@ -42,7 +47,7 @@
     <div id="codes">
         <p>alimentation</p>
         <input type="text" id="input1" placeholder="Code 1">
-        <p>énergie</p>
+        <p>réchauffement climatique</p>
         <input type="text" id="input2" placeholder="Code 2">
         <p>biodiversité</p>
         <input type="text" id="input3" placeholder="Code 3">
@@ -51,6 +56,8 @@
     <button id="validateButton">Valider</button>
 
     <div id="result"></div>
+
+    <h3>indices</h3>
 
     <script>
         function startTimer(duration, display) {
@@ -76,9 +83,9 @@
             startTimer(sixtyMinutes, display);
 
             // Codes corrects
-            let code1 = "1234";
-            let code2 = "5678";
-            let code3 = "abcd";
+            let code1 = "ecologie";
+            let code2 = "59420";
+            let code3 = "ours polaire";
 
             document.getElementById('validateButton').addEventListener('click', function() {
                 let input1 = document.getElementById('input1').value;
@@ -101,6 +108,7 @@
 
 <!--
 palette de couleur
+https://coolors.co/palette/d8f3dc-b7e4c7-95d5b2-74c69d-52b788-40916c-2d6a4f-1b4332-081c15
 ECF39E => titres
 4f772d => codes
 132A13 => fond
