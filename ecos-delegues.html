@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escape game</title>
+    <title>Escape Game</title>
     <style>
         body {
             background-image: url("fondv2.svg");
@@ -11,6 +11,8 @@
             background-size: cover;
             color: #D8F3DC;
             text-align: center;
+            margin: 0;
+            padding: 0;
         }
         h1 {
             color: #95D5B2;
@@ -19,50 +21,64 @@
         }
         .timer {
             font-size: 50px;
-            margin-top: 0;
             color: #B7E4C7;
         }
         input {
             background-color: #40916C;
-            color: #ffffff;
+            color: white;
             border: none;
             padding: 10px;
             margin: 10px;
             border-radius: 10%;
         }
-        h3{
+        h3 {
             color: #95D5B2;
             font-size: 70px;
         }
-
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #40916C;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+        }
     </style>
 </head>
 <body>
-    <h1>escape game</h1>
-    <h2>Entrez les codes secrets :</h2>
+    <h1>Escape Game</h1>
+    <h2>Entrez le code secret :</h2>
 
     <div class="timer" id="timer">50:00</div>
 
-    <!-- Trois champs de saisie pour les codes -->
-    <div id="codes">
-        <p>alimentation</p>
-        <input type="text" id="input1" placeholder="Code 1">
-        <p>réchauffement climatique</p>
-        <input type="text" id="input2" placeholder="Code 2">
-        <p>biodiversité</p>
-        <input type="text" id="input3" placeholder="Code 3">
+    <div id="code-container">
+        <p id="question">alimentation</p>
+        <input type="text" id="input" placeholder="Entrez le code">
     </div>
     
     <button id="validateButton">Valider</button>
 
     <div id="result"></div>
 
-    <h3>indices</h3>
+    <h3>Indices</h3>
+
+    <!-- Section pour afficher l'animation -->
+    <div id="animation-container" style="display: none;">
+        <h2>Bravo ! Maintenant, découvrez votre empreinte carbone :</h2>
+        <button id="openSiteButton">Aller au test</button>
+        <p>Notez votre empreinte carbone et entrez-la ici :</p>
+        <input type="number" id="carbonInput" placeholder="Ex: 2900">
+        <button id="submitCarbon">Valider</button>
+        <p id="finalResult"></p>
+    </div>
 
     <script>
+        let timerInterval;
+
         function startTimer(duration, display) {
             let timer = duration, minutes, seconds;
-            setInterval(function () {
+            timerInterval = setInterval(function () {
                 minutes = parseInt(timer / 60, 10);
                 seconds = parseInt(timer % 60, 10);
 
@@ -73,45 +89,75 @@
 
                 if (--timer < 0) {
                     timer = 0;
+                    clearInterval(timerInterval); // Arrêter le timer quand le temps est écoulé
                 }
             }, 1000);
         }
 
         window.onload = function () {
-            var sixtyMinutes = 50 * 60,
+            let fiftyMinutes = 50 * 60,
                 display = document.querySelector('#timer');
-            startTimer(sixtyMinutes, display);
+            startTimer(fiftyMinutes, display);
 
-            // Codes corrects
-            let code1 = "ecologie";
-            let code2 = "59420";
-            let code3 = "ours polaire";
+            let codes = [
+                { question: "alimentation", answer: "ecologie" },
+                { question: "réchauffement climatique", answer: "59420" },
+                { question: "biodiversité", answer: "ours polaire" }
+            ];
+
+            let step = 0; 
+            let inputField = document.getElementById('input');
+            let questionText = document.getElementById('question');
+            let result = document.getElementById('result');
+            let animationContainer = document.getElementById('animation-container');
 
             document.getElementById('validateButton').addEventListener('click', function() {
-                let input1 = document.getElementById('input1').value;
-                let input2 = document.getElementById('input2').value;
-                let input3 = document.getElementById('input3').value;
-                let result = document.getElementById('result');
+                let userInput = inputField.value.trim();
 
-                if (input1 === code1 && input2 === code2 && input3 === code3) {
-                    result.textContent = "Tous les codes sont corrects, vous avez sauvé le monde !";
-                    result.style.color = "green";
+                if (userInput === codes[step].answer) {
+                    step++;
+
+                    if (step < codes.length) {
+                        questionText.textContent = codes[step].question;
+                        inputField.value = ""; 
+                    } else {
+                        result.textContent = "Tous les codes sont corrects, une dernière épreuve vius attend !";
+                        result.style.color = "green";
+
+                        // Arrêter le timer une fois les codes validés
+                        clearInterval(timerInterval);
+
+                        document.getElementById('code-container').style.display = "none";
+                        document.getElementById('validateButton').style.display = "none";
+                        animationContainer.style.display = "block";
+                    }
                 } else {
-                    result.textContent = "Mauvais codes, essayez encore.";
+                    result.textContent = "Mauvais code, essayez encore.";
                     result.style.color = "red";
+                }
+            });
+
+            document.getElementById('openSiteButton').addEventListener('click', function() {
+                window.open("https://www.oce.global/animations/CarbonFootprint-final/footprint.html", "_blank");
+            });
+
+            document.getElementById('submitCarbon').addEventListener('click', function() {
+                let carbonValue = parseFloat(document.getElementById('carbonInput').value);
+
+                if (!isNaN(carbonValue)) {
+                    if (carbonValue < 3000) {
+                        document.getElementById('finalResult').textContent = "🎉 Félicitations ! Votre empreinte est inférieure à 3000, vous avez gagné !";
+                        document.getElementById('finalResult').style.color = "green";
+                    } else {
+                        document.getElementById('finalResult').textContent = "❌ Votre empreinte est trop élevée. Réduisez-la pour gagner !";
+                        document.getElementById('finalResult').style.color = "red";
+                    }
+                } else {
+                    document.getElementById('finalResult').textContent = "Veuillez entrer un nombre valide.";
+                    document.getElementById('finalResult').style.color = "red";
                 }
             });
         };
     </script>
 </body>
 </html>
-
-<!--
-palette de couleur
-https://coolors.co/palette/d8f3dc-b7e4c7-95d5b2-74c69d-52b788-40916c-2d6a4f-1b4332-081c15
-ECF39E => titres
-4f772d => codes
-132A13 => fond
-487642 => timer
-90A955 => textes
--->
