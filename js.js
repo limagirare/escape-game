@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape Game</title>
+    <style>
+        body {
+            background-image: url("fondv2.svg");
+            background-repeat: no-repeat;
+            background-size: cover;
+            color: #D8F3DC;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #95D5B2;
+            font-size: 100px;
+            margin-bottom: 10px;
+        }
+        .timer {
+            font-size: 50px;
+            color: #B7E4C7;
+        }
+        input {
+            background-color: #155d27;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 10%;
+        }
+        h3 {
+            color: #95D5B2;
+            font-size: 70px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #155d27;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+            border-radius: 10%;
+
+        }
+    </style>
+</head>
+<body>
+    <h1>Escape Game</h1>
+    <h2>Entrez le code secret :</h2>
+
+    <div class="timer" id="timer">50:00</div>
+
+    <div id="code-container">
+        <p id="question">alimentation</p>
+        <input type="text" id="input" placeholder="Entrez le code">
+    </div>
+    
+    <button id="validateButton">Valider</button>
+
+    <div id="result"></div>
+
+    <!-- Section pour afficher l'animation -->
+    <div id="animation-container" style="display: none;">
+        <h2>Bravo ! Maintenant, découvrez votre empreinte carbone :</h2>
+        <button id="openSiteButton">Aller au test</button>
+        <p>Notez votre empreinte carbone et entrez-la ici :</p>
+        <input type="number" id="carbonInput" placeholder="Ex: 2900">
+        <button id="submitCarbon">Valider</button>
+        <p id="finalResult"></p>
+    </div>
+
+    <script src="js.js"></script>
+</body>
+</html>
