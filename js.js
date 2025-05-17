@@ -1,78 +1,89 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escape Game</title>
-    <style>
-        body {
-            background-image: url("fondv2.svg");
-            background-repeat: no-repeat;
-            background-size: cover;
-            color: #D8F3DC;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-        h1 {
-            color: #95D5B2;
-            font-size: 100px;
-            margin-bottom: 10px;
-        }
-        .timer {
-            font-size: 50px;
-            color: #B7E4C7;
-        }
-        input {
-            background-color: #155d27;
-            color: white;
-            border: none;
-            padding: 10px;
-            margin: 10px;
-            border-radius: 10%;
-        }
-        h3 {
-            color: #95D5B2;
-            font-size: 70px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 18px;
-            background-color: #155d27;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin: 10px;
-            border-radius: 10%;
 
+        let timerInterval;
+
+        function startTimer(duration, display) {
+            let timer = duration, minutes, seconds;
+            timerInterval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    timer = 0;
+                    clearInterval(timerInterval); // Arrêter le timer quand le temps est écoulé
+                }
+            }, 1000);
         }
-    </style>
-</head>
-<body>
-    <h1>Escape Game</h1>
-    <h2>Entrez le code secret :</h2>
 
-    <div class="timer" id="timer">50:00</div>
+        window.onload = function () {
+            let fiftyMinutes = 50 * 60,
+                display = document.querySelector('#timer');
+            startTimer(fiftyMinutes, display);
 
-    <div id="code-container">
-        <p id="question">alimentation</p>
-        <input type="text" id="input" placeholder="Entrez le code">
-    </div>
-    
-    <button id="validateButton">Valider</button>
+            let codes = [
+                { question: "alimentation", answer: "AY7BX9" },
+                { question: "biodiversite", answer: "1314" },
+                { question: "consommation", answer: "96587" },
+                { question: "rechauffement climatique", answer: "951" },
+                { question: "transports", answer: "transport" },
 
-    <div id="result"></div>
 
-    <!-- Section pour afficher l'animation -->
-    <div id="animation-container" style="display: none;">
-        <h2>Bravo ! Maintenant, découvrez votre empreinte carbone :</h2>
-        <button id="openSiteButton">Aller au test</button>
-        <p>Notez votre empreinte carbone et entrez-la ici :</p>
-        <input type="number" id="carbonInput" placeholder="Ex: 2900">
-        <button id="submitCarbon">Valider</button>
-        <p id="finalResult"></p>
-    </div>
+            ];
 
-    <script src="js.js"></script>
-</body>
-</html>
+            let step = 0; 
+            let inputField = document.getElementById('input');
+            let questionText = document.getElementById('question');
+            let result = document.getElementById('result');
+            let animationContainer = document.getElementById('animation-container');
+
+            document.getElementById('validateButton').addEventListener('click', function() {
+                let userInput = inputField.value.trim();
+
+                if (userInput === codes[step].answer) {
+                    step++;
+
+                    if (step < codes.length) {
+                        questionText.textContent = codes[step].question;
+                        inputField.value = ""; 
+                    } else {
+                        result.textContent = "Tous les codes sont corrects, une dernière épreuve vius attend !";
+                        result.style.color = "green";
+
+                        // Arrêter le timer une fois les codes validés
+                        clearInterval(timerInterval);
+
+                        document.getElementById('code-container').style.display = "none";
+                        document.getElementById('validateButton').style.display = "none";
+                        animationContainer.style.display = "block";
+                    }
+                } else {
+                    result.textContent = "Mauvais code, essayez encore.";
+                    result.style.color = "red";
+                }
+            });
+
+            document.getElementById('openSiteButton').addEventListener('click', function() {
+                window.open("https://www.oce.global/animations/CarbonFootprint-final/footprint.html", "_blank");
+            });
+
+            document.getElementById('submitCarbon').addEventListener('click', function() {
+                let carbonValue = parseFloat(document.getElementById('carbonInput').value);
+
+                if (!isNaN(carbonValue)) {
+                    if (carbonValue < 3000) {
+                        document.getElementById('finalResult').textContent = "🎉 Félicitations ! Votre empreinte est inférieure à 3000, vous avez gagné !";
+                        document.getElementById('finalResult').style.color = "green";
+                    } else {
+                        document.getElementById('finalResult').textContent = "❌ Votre empreinte est trop élevée. Réduisez-la pour gagner !";
+                        document.getElementById('finalResult').style.color = "red";
+                    }
+                } else {
+                    document.getElementById('finalResult').textContent = "Veuillez entrer un nombre valide.";
+                    document.getElementById('finalResult').style.color = "red";
+                }
+            });
+        };
