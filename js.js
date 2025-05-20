@@ -33,9 +33,6 @@
                 { question: "consommation 3", answer: "HSABM" },
                 { question: "déchets 1", answer: "474" },
                 { question: "rechauffement climatique", answer: "951" },
-                { question: "transports", answer: "transport" },
-
-
             ];
 
             let step = 0; 
