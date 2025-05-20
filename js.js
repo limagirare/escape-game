@@ -25,9 +25,13 @@
             startTimer(fiftyMinutes, display);
 
             let codes = [
-                { question: "alimentation", answer: "AY7BX9" },
-                { question: "biodiversite", answer: "1314" },
-                { question: "consommation", answer: "96587" },
+                { question: "alimentation 1", answer: "AY7BX9" },
+                { question: "alimentation 2", answer: "247" },
+                { question: "biodiversite 1", answer: "xxx" },
+                { question: "biodiversite 2", answer: "1314" },
+                { question: "consommation 2", answer: "96587" },
+                { question: "consommation 3", answer: "HSABM" },
+                { question: "déchets 1", answer: "474" },
                 { question: "rechauffement climatique", answer: "951" },
                 { question: "transports", answer: "transport" },
 
