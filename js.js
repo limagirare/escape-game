@@ -27,7 +27,7 @@
             let codes = [
                 { question: "alimentation 1", answer: "AY7BX9" },
                 { question: "alimentation 2", answer: "247" },
-                { question: "biodiversite 1", answer: "xxx" },
+                { question: "biodiversite 1", answer: "JADKVOSN" },
                 { question: "biodiversite 2", answer: "1314" },
                 { question: "consommation 2", answer: "96587" },
                 { question: "consommation 3", answer: "HSABM" },
