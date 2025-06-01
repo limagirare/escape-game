@@ -29,10 +29,10 @@
                 { question: "alimentation 2", answer: "247" },
                 { question: "biodiversite 1", answer: "JADKVOSN" },
                 { question: "biodiversite 2", answer: "1314" },
-                { question: "consommation 2", answer: "96587" },
-                { question: "consommation 3", answer: "HSABM" },
-                { question: "déchets 1", answer: "474" },
-                { question: "rechauffement climatique", answer: "951" },
+                { question: "consommation 1", answer: "96587" },
+                { question: "consommation 2", answer: "HSABM" },
+                { question: "déchets ", answer: "474" },
+                { question: "rechauffement climatique", answer: "519" },
             ];
 
             let step = 0; 
