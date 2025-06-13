@@ -1,78 +1,590 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escape Game</title>
+    <meta charset="UTF-8" />
+    <title>Terminal Apocalyptique</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         body {
-            background-image: url("fondv2.svg");
-            background-repeat: no-repeat;
-            background-size: cover;
-            color: #D8F3DC;
-            text-align: center;
             margin: 0;
             padding: 0;
+            background: black;
+            color: #00ff00;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
         }
-        h1 {
-            color: #95D5B2;
-            font-size: 100px;
-            margin-bottom: 10px;
-        }
-        .timer {
-            font-size: 50px;
-            color: #B7E4C7;
-        }
-        input {
-            background-color: #155d27;
-            color: white;
-            border: none;
-            padding: 10px;
-            margin: 10px;
-            border-radius: 10%;
-        }
-        h3 {
-            color: #95D5B2;
-            font-size: 70px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 18px;
-            background-color: #155d27;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin: 10px;
-            border-radius: 10%;
 
+        #eco-stats {
+            position: fixed;
+            bottom: 10px;
+            right: 20px;
+            font-size: 12px;
+            color: #00ff00;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        #co2-bar label {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .bar-bg {
+            width: 200px;
+            height: 12px;
+            border: 1px solid #00ff00;
+            background: #003300;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: lime;
+            width: 100%;
+            transition: width 0.4s ease-out;
+        }
+
+
+        @keyframes flicker {
+
+            0%,
+            19%,
+            21%,
+            23%,
+            25%,
+            54%,
+            56%,
+            100% {
+                opacity: 1;
+            }
+
+            20%,
+            22%,
+            24%,
+            55% {
+                opacity: 0.92;
+            }
+        }
+
+        #terminal {
+            padding: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow-y: auto;
+            animation: flicker 1.5s infinite;
+        }
+
+        #timer {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            font-size: 16px;
+            color: red;
+            text-shadow: 0 0 5px red;
+        }
+
+        input[type="text"] {
+            background: black;
+            color: #00ff00;
+            border: none;
+            border-bottom: 2px solid #00ff00;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            width: 100%;
+            outline: none;
+        }
+
+        #input-line {
+            display: flex;
+            align-items: center;
+        }
+
+        #input-line::before {
+            content: "> ";
+            white-space: pre;
+        }
+
+        p {
+            margin: 8px 0;
+            line-height: 1.6em;
+        }
+
+        #screen-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        .flash-effect {
+            animation: screenScan 1.2s ease-out forwards;
+        }
+
+        @keyframes screenScan {
+            0% {
+                opacity: 0;
+            }
+
+            30% {
+                opacity: 0.7;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            70% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* Styles for the CO2 Quiz Modal */
+        #quizModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            /* Fallback */
+            background: rgba(0, 0, 0, 0.95);
+            /* Slight transparency */
+            color: #00ff00;
+            z-index: 9999;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        .quiz-modal-content {
+            padding: 20px;
+            max-width: 700px;
+            /* Increased width */
+            margin: 20px auto;
+            background: rgba(0, 20, 0, 0.9);
+            border: 1px solid #00ff00;
+            height: calc(100vh - 40px);
+            /* Full viewport height minus margin */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #customQuizTitle {
+            text-align: center;
+            margin-bottom: 20px;
+            color: yellow;
+            /* Distinguish title */
+        }
+
+        #customQuestionArea,
+        #customResultArea {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            line-height: 1.8em;
+            /* Better readability for questions */
+        }
+
+        #customQuestionArea h3 {
+            margin-bottom: 15px;
+        }
+
+        #customQuestionArea label {
+            display: block;
+            margin: 10px 0;
+            cursor: pointer;
+            padding: 8px;
+            border: 1px dashed transparent;
+            /* For hover effect */
+        }
+
+        #customQuestionArea input[type="radio"] {
+            margin-right: 10px;
+            appearance: none;
+            /* Custom radio button */
+            width: 12px;
+            height: 12px;
+            border: 1px solid #00ff00;
+            position: relative;
+            top: 2px;
+        }
+
+        #customQuestionArea input[type="radio"]:checked {
+            background-color: #00ff00;
+            box-shadow: 0 0 5px #00ff00;
+        }
+
+        #customQuestionArea label:hover {
+            border-color: #00ff00;
+            background-color: rgba(0, 255, 0, 0.1);
+        }
+
+
+        #customNextButton,
+        .quiz-button {
+            /* Shared style for buttons in quiz */
+            background: black;
+            color: #00ff00;
+            font-family: 'Press Start 2P', monospace;
+            border: 1px solid #00ff00;
+            padding: 15px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        #customNextButton:hover,
+        .quiz-button:hover {
+            background: #00ff00;
+            color: black;
         }
     </style>
 </head>
+
 <body>
-    <h1>Escape Game</h1>
-    <h2>Entrez le code secret :</h2>
-
-    <div class="timer" id="timer">50:00</div>
-
-    <div id="code-container">
-        <p id="question">alimentation 1</p>
-        <input type="text" id="input" placeholder="Entrez le code">
-    </div>
-    
-    <button id="validateButton">Valider</button>
-
-    <div id="result"></div>
-
-    <!-- Section pour afficher l'animation -->
-    <div id="animation-container" style="display: none;">
-        <h2>Bravo ! Maintenant, découvrez votre empreinte carbone :</h2>
-        <button id="openSiteButton">Aller au test</button>
-        <p>Notez votre empreinte carbone et entrez-la ici :</p>
-        <input type="number" id="carbonInput" placeholder="Ex: 2900">
-        <button id="submitCarbon">Valider</button>
-        <p id="finalResult"></p>
+    <div id="timer">⏳ Temps restant : 50:00</div>
+    <div id="terminal">
+        <div id="log">
+            <p>=== TERMINAL DE SURVIE ===</p>
+            <p>Vous êtes enfermés dans votre classe, car le taux de CO₂ dans l'atmosphère est devenu si élevé que si
+                vous sortez, vous risquez votre vie.</p>
+            <p>Vous pouvez faire baisser le taux de CO₂ en résolvant plusieurs énigmes, mais vous n'avez que 50 minutes.
+            </p>
+        </div>
+        <div id="question"></div>
+        <div id="input-line">
+            <input type="text" id="answerInput" placeholder="Tapez votre réponse ici..." autocomplete="off" />
+        </div>
     </div>
 
-    <script src="js.js"></script>
+    <div id="eco-stats">
+        <div id="co2-bar">
+            <label>CO₂ atmosphérique</label>
+            <div class="bar-bg">
+                <div class="bar-fill" id="co2-fill"></div>
+            </div>
+        </div>
+        <p id="eco-data">🌱 Forêts restantes : 29% — 🌡️ Température moyenne : 1.2°C</p>
+    </div>
+
+    <div id="quizModal">
+        <div class="quiz-modal-content">
+            <h2 id="customQuizTitle">BILAN CARBONE PERSONNEL</h2>
+            <div id="customQuestionArea">
+            </div>
+            <div id="customResultArea" style="display:none;">
+            </div>
+            <button id="customNextButton" onclick="processCustomAnswer()">Suivant</button>
+        </div>
+    </div>
+    <div id="screen-flash"></div>
+
+    <script>
+        let co2Level = 100; // For the initial terminal game
+        const terminalGameData = [ // Renamed from 'data' to avoid conflict
+            { question: "alimentation 1", answer: "AY7BX9" },
+            { question: "alimentation 2", answer: "247" },
+            { question: "biodiversite 1", answer: "klosvvoc" },
+            { question: "biodiversite 2", answer: "131" },
+            { question: "consommation 1", answer: "96587" },
+            { question: "consommation 2", answer: "PCGB" },
+            { question: "déchets", answer: "475" },
+            { question: "rechauffement climatique", answer: "519" }
+
+        ];
+
+        let terminalCurrentIndex = 0;
+        let minutes = 50;
+        let seconds = 0;
+
+        const questionEl = document.getElementById("question");
+        const inputEl = document.getElementById("answerInput");
+        const logEl = document.getElementById("log");
+        const timerEl = document.getElementById("timer");
+        let timerInterval; // To store the interval ID
+
+        function updateTimer() {
+            const m = minutes < 10 ? "0" + minutes : minutes;
+            const s = seconds < 10 ? "0" + seconds : seconds;
+            timerEl.innerText = `⏳ Temps restant : ${m}:${s}`;
+        }
+
+        function checkGameOver() {
+            if (minutes <= 0 && seconds <= 0) {
+                if (timerInterval) clearInterval(timerInterval); // Stop timer
+                alert("Temps écoulé ! La mission globale est un échec.");
+                location.reload();
+            }
+        }
+
+        inputEl.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                const input = inputEl.value.trim();
+                if (terminalCurrentIndex < terminalGameData.length) {
+                    const goodAnswer = terminalGameData[terminalCurrentIndex].answer;
+                    const questionText = terminalGameData[terminalCurrentIndex].question;
+
+                    if (input.toUpperCase() === goodAnswer.toUpperCase()) {
+                        logEl.innerHTML += `<p>> ✅ ${questionText} : ${input}</p>`;
+                        terminalCurrentIndex++;
+                        co2Level -= 100 / terminalGameData.length;
+                        document.getElementById("co2-fill").style.width = `${Math.max(0, co2Level)}%`;
+                    } else {
+                        logEl.innerHTML += `<p>> ❌ Mauvaise réponse pour "${questionText}". -1 minute !</p>`;
+                        if (minutes > 0) {
+                            minutes--;
+                        } else if (seconds > 0) { // If minutes is 0, but seconds remain (unlikely with current logic but safe)
+                            seconds = 0;
+                        }
+                        checkGameOver(); // Check immediately if penalty leads to game over
+                    }
+                }
+
+                updateTimer();
+                inputEl.value = "";
+                logEl.scrollTop = logEl.scrollHeight;
+                showTerminalQuestion();
+            }
+        });
+
+        function startTerminalTimer() {
+            if (timerInterval) clearInterval(timerInterval); // Clear existing timer if any
+            timerInterval = setInterval(() => {
+                if (seconds === 0) {
+                    if (minutes === 0) {
+                        checkGameOver();
+                        return;
+                    }
+                    minutes--;
+                    seconds = 59;
+                } else {
+                    seconds--;
+                }
+                updateTimer();
+            }, 1000);
+        }
+
+        function showTerminalQuestion() {
+            if (terminalCurrentIndex < terminalGameData.length) {
+                questionEl.innerHTML = `<p>> Énigme : ${terminalGameData[terminalCurrentIndex].question}</p>`;
+                inputEl.focus();
+            } else {
+                if (timerInterval) clearInterval(timerInterval); // Stop enigma timer once all enigmas are done
+                questionEl.innerHTML = `
+            <p>> 🎉 Toutes les énigmes ont été résolues. Le système principal est stabilisé.</p>
+            <p>> Dernière étape : Évaluez et optimisez votre empreinte carbone personnelle pour assurer la survie à long terme.</p>
+            <p><a href="https://www.oce.global/animations/CarbonFootprint-final/footprint.html" target="_blank">>Niveau de co2</a>
+	    <p>>Si vous avez atteint un niveau de co2 inférieur à 3000 kg/an, soit 3 tonnes , vous pouvez sortir, l'air est respirable !</p>
+        `;
+                document.getElementById("input-line").style.display = "none";
+            }
+        }
+
+        
+
+        let co2QuizIndex = 0;
+        let co2QuizAnswers = [];
+        let co2HouseholdSize = 1;
+
+        function startCustomQuiz() {
+            co2QuizIndex = 0;
+            co2QuizAnswers = [];
+            co2HouseholdSize = 1;
+            document.getElementById("quizModal").style.display = "block";
+            document.getElementById("customQuestionArea").style.display = "block";
+            document.getElementById("customResultArea").style.display = "none";
+            document.getElementById("customNextButton").style.display = "block";
+            document.getElementById("customNextButton").disabled = false; // Ensure button is enabled
+            renderCustomQuestion();
+        }
+
+        function renderCustomQuestion() {
+            const questionArea = document.getElementById("customQuestionArea");
+            const nextButton = document.getElementById("customNextButton");
+
+            if (co2QuizIndex < quiz.length) {
+                const currentQuestion = quiz[co2QuizIndex];
+                let optionsHTML = "";
+                currentQuestion.options.forEach((option, index) => {
+                    optionsHTML += `
+                    <div>
+                        <input type="radio" name="customQuizOption${co2QuizIndex}" id="option${co2QuizIndex}_${index}" value="${option.valeur}">
+                        <label for="option${co2QuizIndex}_${index}">${option.texte}</label>
+                    </div>
+                `;
+                });
+                questionArea.innerHTML = `<h3>${co2QuizIndex + 1}/${quiz.length}. ${currentQuestion.question}</h3>${optionsHTML}`;
+                nextButton.textContent = "Suivant";
+                if (co2QuizIndex === quiz.length - 1) {
+                    nextButton.textContent = "Voir les résultats";
+                }
+            } else {
+                nextButton.disabled = true; // Disable while showing results
+                showCustomResults();
+            }
+        }
+
+        function processCustomAnswer() {
+            const currentQuestion = quiz[co2QuizIndex];
+            const radios = document.getElementsByName(`customQuizOption${co2QuizIndex}`);
+            let selectedValue;
+            let selectedOptionText = "";
+
+            for (const radio of radios) {
+                if (radio.checked) {
+                    selectedValue = parseFloat(radio.value);
+                    const optionIndex = Array.from(radios).indexOf(radio);
+                    selectedOptionText = currentQuestion.options[optionIndex].texte;
+                    break;
+                }
+            }
+
+            if (selectedValue === undefined) {
+                alert("Veuillez sélectionner une option.");
+                return;
+            }
+
+            co2QuizAnswers.push({
+                questionText: currentQuestion.question,
+                answerText: selectedOptionText,
+                value: selectedValue,
+                questionIndex: co2QuizIndex
+            });
+
+            if (co2QuizIndex === 2) {
+                co2HouseholdSize = selectedValue > 0 ? selectedValue : 1;
+            }
+
+            co2QuizIndex++;
+            renderCustomQuestion();
+        }
+
+        function showCustomResults() {
+            const questionArea = document.getElementById("customQuestionArea");
+            const nextButton = document.getElementById("customNextButton");
+            const resultArea = document.getElementById("customResultArea");
+
+            questionArea.style.display = "none";
+            nextButton.style.display = "none";
+            resultArea.style.display = "block";
+
+            let personalDirectCO2 = 0;
+            let householdDirectCO2 = 0;
+
+            const heatingTypeAnswer = co2QuizAnswers.find(ans => ans.questionIndex === 12);
+            const actualHeatingTypeID = heatingTypeAnswer ? heatingTypeAnswer.value : null;
+
+            co2QuizAnswers.forEach(ans => {
+                const qIndex = ans.questionIndex;
+                const val = ans.value;
+
+                if (qIndex === 0) { /* Age - no CO2 impact */ }
+                else if (qIndex === 1) { personalDirectCO2 += val; }
+                else if (qIndex === 2) { /* Household size - stored */ }
+                else if (qIndex >= 3 && qIndex <= 9) { householdDirectCO2 += val; }
+                else if (qIndex === 10 || qIndex === 11) { householdDirectCO2 += val; }
+                else if (qIndex === 12) { /* Heating Type ID - stored */ }
+                else if (qIndex === 13) {
+                    if (actualHeatingTypeID === 10001) {
+                        householdDirectCO2 += val;
+                    } else if (val === 0 && quiz[qIndex].options.find(opt => opt.valeur === 0 && opt.texte.includes("Non applicable"))) {
+                        householdDirectCO2 += 0;
+                    } else if (actualHeatingTypeID === 0) {
+                        householdDirectCO2 += 0;
+                    }
+                }
+                else if (qIndex === 14) { personalDirectCO2 += val; }
+                else if (qIndex === 15) { householdDirectCO2 += val; }
+                else if (qIndex >= 16 && qIndex <= 38) { personalDirectCO2 += val; }
+            });
+
+            const householdPerPersonCO2 = householdDirectCO2 / (co2HouseholdSize || 1);
+            const finalCalculatedCO2 = personalDirectCO2 + householdPerPersonCO2;
+            const finalCalculatedCO2InTonnes = finalCalculatedCO2 / 1000;
+
+            let resultHTML = `<h3>Résultats de votre Bilan Carbone :</h3>`;
+            resultHTML += `<p>Votre empreinte carbone annuelle personnelle est estimée à :</p>`;
+            resultHTML += `<p style="font-size: 22px; color: yellow;">${finalCalculatedCO2.toFixed(0)} kg CO₂e / an</p>`; // Arrondi aux kg
+            resultHTML += `<p>Soit environ ${finalCalculatedCO2InTonnes.toFixed(1)} tonnes CO₂e / an.</p>`; // 1 décimale pour tonnes
+            resultHTML += `<hr style="border-color: #00ff00;">`;
+
+            if (finalCalculatedCO2InTonnes > 3) {
+                resultHTML += `<p style="color: red; font-size: 18px;">IMPACT CARBONE TROP ÉLEVÉ !</p>`;
+                resultHTML += `<p>Votre empreinte de ${finalCalculatedCO2InTonnes.toFixed(1)} tonnes dépasse le seuil critique de 3 tonnes pour cette simulation.</p>`;
+                resultHTML += `<p>Vous devez optimiser davantage vos choix pour réussir la mission. Le protocole de simulation vous invite à refaire le questionnaire.</p>`;
+                resultHTML += `<button onclick="startCustomQuiz()" class="quiz-button">Recommencer le Quiz CO₂</button>`;
+                resultHTML += `<button onclick="closeQuizModal(false)" class="quiz-button" style="margin-top:10px;">Quitter la Simulation CO₂</button>`;
+            } else {
+                if (timerInterval) clearInterval(timerInterval);
+
+                resultHTML += `<p style="color: lightgreen; font-size: 18px;">FÉLICITATIONS, MISSION ACCOMPLIE !</p>`;
+                resultHTML += `<p>Votre empreinte carbone est de ${finalCalculatedCO2InTonnes.toFixed(1)} tonnes. C'est en dessous du seuil critique de 3 tonnes !</p>`;
+                resultHTML += `<p>Grâce à vos choix éclairés, la simulation indique que vous avez contribué à stabiliser la situation. Le temps est suspendu.</p>`;
+                resultHTML += `<hr style="border-color: #00ff00;">`;
+                resultHTML += `<p style="font-size:12px;">Détail (estimation) : Part perso. directe: ${personalDirectCO2.toFixed(0)} kg; Part foyer: ${householdPerPersonCO2.toFixed(0)} kg (sur ${co2HouseholdSize} pers.).</p>`;
+                resultHTML += `<button onclick="closeQuizModal(true)" class="quiz-button">Consulter le statut du Terminal</button>`;
+
+                logEl.innerHTML += `<p style="color: lightgreen;">>> SYSTÈME : EMPREINTE CARBONE PERSONNELLE VALIDÉE (< ${finalCalculatedCO2InTonnes.toFixed(1)}t). MISSION FINALE RÉUSSIE.</p>`;
+                logEl.innerHTML += `<p style="color: lightgreen;">>> PROTOCOLE DE STABILISATION DU CO2 ACTIVÉ. TEMPS SUSPENDU.</p>`;
+                questionEl.innerHTML = `<p style="color: lightgreen; font-size:18px;">VOUS AVEZ GAGNÉ !</p><p>Le terminal confirme la réussite de la mission de stabilisation.</p>`;
+                document.getElementById("input-line").style.display = "none";
+                timerEl.textContent = "TEMPS SUSPENDU - MISSION RÉUSSIE";
+                timerEl.style.color = "lightgreen";
+                timerEl.style.textShadow = "0 0 5px lightgreen";
+                document.getElementById("terminal").style.animation = "none";
+            }
+            resultArea.innerHTML = resultHTML;
+
+            const screenFlashDiv = document.getElementById("screen-flash");
+            screenFlashDiv.classList.add("flash-effect");
+            setTimeout(() => {
+                screenFlashDiv.classList.remove("flash-effect");
+            }, 1200);
+        }
+
+        function closeQuizModal(isVictoryAfterQuiz) {
+            document.getElementById("quizModal").style.display = "none";
+            document.getElementById("customNextButton").disabled = false; // Re-enable button for next time
+
+            if (isVictoryAfterQuiz) {
+                logEl.innerHTML += `<p style="color: lightgreen;">>> Retour au terminal. Statut global : STABLE.</p>`;
+                // Terminal already updated by showCustomResults
+            } else {
+                // This case is if they pressed "Quitter la Simulation CO₂" after a high score
+                logEl.innerHTML += `<p>> Simulation du bilan carbone interrompue. Le terminal principal est réactivé.</p>`;
+                // Reactivate the enigma launch button as the CO2 quiz part was not successfully completed
+                questionEl.innerHTML = `
+                <p>> Le bilan carbone est une étape cruciale. Prêt à réessayer ou à consulter les énigmes ?</p>
+                <button onclick="startCustomQuiz()" class="quiz-button">
+                ⚡ Relancer le Bilan Carbone
+                </button>
+            `;
+                // If enigmas were completed, this button allows to retry CO2.
+                // If enigmas were NOT completed, showTerminalQuestion would normally be called.
+                // However, CO2 quiz is launched AFTER enigmas, so terminalCurrentIndex should be >= terminalGameData.length
+                document.getElementById("input-line").style.display = "none"; // Keep input hidden as it's button driven now
+            }
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        // Initial setup for the terminal game
+        updateTimer();
+        showTerminalQuestion();
+        startTerminalTimer();
+
+    </script>
 </body>
+
 </html>
